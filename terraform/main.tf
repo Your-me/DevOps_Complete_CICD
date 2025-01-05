@@ -64,6 +64,22 @@ resource "aws_iam_instance_profile" "ec2-profile" {
   role = "EC2-ECR-AUTH"
 }
 
+resource "aws_iam_role" "ec2_role" {
+  name = "EC2-ECR-AUTH"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
 resource "aws_key_pair" "deployer" {
   key_name   = var.key_name
   public_key = var.public_key
