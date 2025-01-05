@@ -14,6 +14,7 @@ provider "aws" {
   region = var.region
 }
 
+#tags key should be capitalized
 /*
 resource "aws_instance" "server" {
   ami = "ami-089146c5626baa6bf"
