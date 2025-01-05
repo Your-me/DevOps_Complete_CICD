@@ -21,7 +21,7 @@ resource "aws_instance" "deploy_server" {
   instance_type          = "t2.micro"
   key_name               = aws_key_pair.deployer.key_name
   vpc_security_group_ids = [aws_security_group.maingroup.id]
-  iam_instance_profile   = aws_iam_instance_profile.ec2-profile.name
+  iam_instance_profile   = aws_iam_instance_profile.ec2-profile-2.name
 
   /*
   provisioner "remote-exec" {
@@ -65,13 +65,13 @@ resource "aws_security_group" "maingroup" {
   }
 }
 
-resource "aws_iam_instance_profile" "ec2-profile" {
-  name = "ec2-profile"
-   role = aws_iam_role.ec2_role.name
+resource "aws_iam_instance_profile" "ec2-profile-2" {
+  name = "ec2-profile-2"
+   role = aws_iam_role.ec2_role-2.name
 }
 
-resource "aws_iam_role" "ec2_role" {
-  name = "EC2-ECR-AUTH-2"
+resource "aws_iam_role" "ec2_role-2" {
+  name = "EC2-ECR-AUTH-II"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
