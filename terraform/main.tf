@@ -16,19 +16,23 @@ provider "aws" {
   region = var.region
 }
 
-resource "aws_instance" "server" {
+resource "aws_instance" "deploy_server" {
   ami                    = "ami-089146c5626baa6bf"
   instance_type          = "t2.micro"
   key_name               = aws_key_pair.deployer.key_name
   vpc_security_group_ids = [aws_security_group.maingroup.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2-profile.name
 
-  connection {
+  provisioner "remote-exec" {
+
+    connection {
     type        = "ssh"
     host        = self.public_ip
     user        = "ubuntu"
     private_key = var.private_key
     timeout     = "4m"
+  }
+
   }
 
   tags = {
@@ -61,11 +65,11 @@ resource "aws_security_group" "maingroup" {
 
 resource "aws_iam_instance_profile" "ec2-profile" {
   name = "ec2-profile"
-  role = "EC2-ECR-AUTH"
+   role = aws_iam_role.ec2_role.name
 }
 
 resource "aws_iam_role" "ec2_role" {
-  name = "EC2-ECR-AUTH"
+  name = "EC2-ECR-AUTH-2"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -86,6 +90,6 @@ resource "aws_key_pair" "deployer" {
 }
 
 output "instance_public_ip" {
-  value     = aws_instance.server.public_ip
+  value     = aws_instance.deploy_server.public_ip
   sensitive = true
 }
