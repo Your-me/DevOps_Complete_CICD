@@ -8,7 +8,7 @@ terraform {
   backend "s3" {
     bucket = var.bucket_name
     key    = "aws/ec2-deploy/terraform.tfstate"
-    region = "eu-north-1"      
+    region = "us-east-1"      
   }
 }
 
@@ -17,7 +17,7 @@ provider "aws" {
 }
 
 resource "aws_instance" "deploy_server" {
-  ami                    = "ami-089146c5626baa6bf"
+  ami                    = "ami-005fc0f236362e99f"
   instance_type          = "t2.micro"
   key_name               = aws_key_pair.deployer.key_name
   vpc_security_group_ids = [aws_security_group.maingroup.id]
