@@ -87,6 +87,14 @@ resource "aws_iam_role" "ec2_role-2" {
   })
 }
 
+resource "aws_ecr_repository" "my_repository" {
+  name                 = "example-node-app"
+  image_tag_mutability = "MUTABLE"  # Options are MUTABLE or IMMUTABLE
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
 resource "aws_iam_policy" "ecr_read_policy" {
   name        = "ECRReadPolicy"
   description = "Policy to provide read access to ECR"
