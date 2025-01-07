@@ -23,21 +23,13 @@ resource "aws_instance" "deploy_server" {
   key_name               = aws_key_pair.deployer.key_name
   vpc_security_group_ids = [aws_security_group.maingroup.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2-profile-2.name
-
-  /*
-  provisioner "remote-exec" {
-   
-    connection {
-    type        = "ssh"
-    host        = self.public_ip
-    user        = "ubuntu"
-    private_key = var.private_key
-    timeout     = "4m"
+   connection {
+      type        = "ssh"
+      host        = self.public_ip
+      user        = "ubuntu"
+      private_key = var.private_key
+      timeout     = "4m"
     }
-
-  }
-  */
-
   tags = {
     Name = "DeployWM"
   }
