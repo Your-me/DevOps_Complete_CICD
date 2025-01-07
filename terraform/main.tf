@@ -123,6 +123,6 @@ resource "aws_key_pair" "deployer" {
 }
 
 output "instance_public_ip" {
-  value     = aws_instance.deploy_server.public_ip
-  #sensitive = true
+  value     = aws_instance.deploy_server.public_ip 
+  sensitive = true
 }
