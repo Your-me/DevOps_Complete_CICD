@@ -17,7 +17,7 @@ jobs:
   deploy-infra:
     runs-on: ubuntu-latest
     outputs:
-      SERVER_PUBLIC_IP: ${{ env.instance_public_ip }}
+      SERVER_PUBLIC_IP: $instance_public_ip
 
     steps:
       - name: Checkout
