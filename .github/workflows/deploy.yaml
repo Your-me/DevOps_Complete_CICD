@@ -72,7 +72,6 @@ jobs:
       - name: Login to AWS ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1 
-
       - name: Build, Push Docker Image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
