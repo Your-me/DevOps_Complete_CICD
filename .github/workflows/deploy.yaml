@@ -35,13 +35,13 @@ jobs:
 
       - name: Terraform plan
         id: plan
-        run: |-
+        run: |
           terraform plan \
-          -var="region=$AWS_REGION" \
-          -var="public_key=$PUBLIC_SSH_KEY" \
-          -var="private_key=$PRIVATE_SSH_KEY" \
-          -var="key_name=deployer_key" \
-          -out=PLAN
+            -var="region=$AWS_REGION" \
+            -var="public_key=$PUBLIC_SSH_KEY" \
+            -var="private_key=$PRIVATE_SSH_KEY" \
+            -var="key_name=deployer_key" \
+            -out=PLAN
         working-directory: ./terraform
 
       - name: Terraform Apply
@@ -49,11 +49,21 @@ jobs:
         run: terraform apply -auto-approve "PLAN"
         working-directory: ./terraform
 
+      - name: Debug Terraform Outputs
+        run: terraform output -json
+        working-directory: ./terraform
+
       - name: Set output
         id: set_ip
-        run: |-
-          instance_public_ip=$(terraform output instance_public_ip)
+        run: |
+          instance_public_ip=$(terraform output -raw instance_public_ip)
+          if [ -z "$instance_public_ip" ]; then
+            echo "Error: instance_public_ip is empty or not found."
+            terraform output
+            exit 1
+          fi
           echo "instance_public_ip=$instance_public_ip" >> $GITHUB_OUTPUT
+          echo "instance_public_ip is retrieved successfully."
 
   deploy-app:
     runs-on: ubuntu-latest
@@ -61,26 +71,30 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Set IP env variable
         run: echo "SERVER_PUBLIC_IP=${{ needs.deploy-infra.outputs.SERVER_PUBLIC_IP }}" >> $GITHUB_ENV
+
       - name: Login to AWS ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1 
-      - name: Build, Push docker Image
+
+      - name: Build, Push Docker Image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: example-node-app
-          IMAGE_TAG:  ${{ github.sha }}
+          IMAGE_TAG: ${{ github.sha }}
           AWS_DEFAULT_REGION: us-east-1
-        run: |-
+        run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
         working-directory: ./nodeapp  
-      - name: Deploy docker Image to EC2
+
+      - name: Deploy Docker Image to EC2
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: example-node-app       
-          IMAGE_TAG:  ${{ github.sha }}
+          IMAGE_TAG: ${{ github.sha }}
           AWS_DEFAULT_REGION: us-east-1
         uses: appleboy/ssh-action@master
         with:
@@ -88,11 +102,11 @@ jobs:
           username: ubuntu
           key: ${{ env.PRIVATE_SSH_KEY }}
           envs: PRIVATE_SSH_KEY, REGISTRY, REPOSITORY, IMAGE_TAG, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION, AWS_REGION
-          script: |-
+          script: |
             sudo apt update
             sudo apt install docker.io -y
             sudo apt install awscli -y
             sudo $(aws ecr get-login --no-include-email --region us-east-1); 
             sudo docker rm myappcontainer || true
             sudo docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
-            sudo docker run -d --name myappcontainer -p 80:8080 $REGISTRY/$REPOSITORY:$IMAGE_TAG
+            sudo docker run -d --name myappcontainer -p 80:8080 $REGISTRY/$REPOSITORY:$IMAGE_TAGs
