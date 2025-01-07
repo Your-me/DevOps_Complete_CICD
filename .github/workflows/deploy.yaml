@@ -17,7 +17,7 @@ jobs:
   deploy-infra:
     runs-on: ubuntu-latest
     outputs:
-      SERVER_PUBLIC_IP: ${{ steps.set-ip.outputs.instance_public_ip }}
+      SERVER_PUBLIC_IP: ${{ steps.get-ip.outputs.instance_public_ip }}
 
     steps:
       - name: Checkout
@@ -50,10 +50,11 @@ jobs:
         working-directory: ./terraform
 
       - name: Set output
-        id: set-ip
+        id: get-ip
         run: |-
           instance_public_ip=$(terraform output instance_public_ip)
           echo "instance_public_ip=$instance_public_ip" >> $GITHUB_OUTPUT
+          echo "instance_public_ip is retrieved successfully."
          # echo: "::set-output name=instance_public_ip::${terraform output instance_public_ip}" Deprecated 
 
   deploy-app:
