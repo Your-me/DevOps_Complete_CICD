@@ -63,7 +63,7 @@ jobs:
             terraform output
             exit 1
           fi
-          echo "instance_server_ip<$instance_public_ip" >> $GITHUB_OUTPUT
+          echo "instance_server_ip = $instance_public_ip" >> "$GITHUB_OUTPUT"
           echo "instance_server_ip is retrieved successfully."
 
   deploy-app:
