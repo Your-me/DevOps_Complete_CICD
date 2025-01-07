@@ -116,13 +116,9 @@ resource "aws_iam_role_policy_attachment" "attach_ecr_read_policy" {
   role       = aws_iam_role.ec2_role-2.name
 }
 
+
 #key pair
 resource "aws_key_pair" "deployer" {
   key_name   = var.key_name
   public_key = var.public_key
-}
-
-output "instance_public_ip" {
-  value     = aws_instance.deploy_server.public_ip 
-  sensitive = true
 }
