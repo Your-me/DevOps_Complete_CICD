@@ -46,7 +46,8 @@ jobs:
 
       - name: Terraform Apply
         id: apply
-        run: terraform apply -auto-approve "PLAN"
+        run: terraform refresh \
+          terraform apply -auto-approve "PLAN"
         working-directory: ./terraform
 
       - name: List Terraform Outputs
