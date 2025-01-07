@@ -17,7 +17,7 @@ jobs:
   deploy-infra:
     runs-on: ubuntu-latest
     outputs:
-      SERVER_PUBLIC_IP: ${{ steps.set_ip.outputs.instance_public_ip }}
+      SERVER_PUBLIC_IP: ${{ steps.set_ip.outputs.instance_server_ip }}
 
     steps:
       - name: Checkout
@@ -63,8 +63,9 @@ jobs:
             terraform output
             exit 1
           fi
-          echo "instance_public_ip=$instance_public_ip" >> $GITHUB_OUTPUT
-          echo "instance_public_ip is retrieved successfully."
+          echo echo "::add-mask::$instance_public_ip"
+          echo "instance_server_ip=$instance_public_ip" >> $GITHUB_OUTPUT
+          echo "instance_server_ip is retrieved successfully."
 
   deploy-app:
     runs-on: ubuntu-latest
