@@ -25,7 +25,7 @@ resource "aws_instance" "deploy_server" {
 
   /*
   provisioner "remote-exec" {
-
+   
     connection {
     type        = "ssh"
     host        = self.public_ip
@@ -84,6 +84,35 @@ resource "aws_iam_role" "ec2_role-2" {
       }
     ]
   })
+}
+
+resource "aws_iam_policy" "ecr_read_policy" {
+  name        = "ECRReadPolicy"
+  description = "Policy to provide read access to ECR"
+  policy      = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetRepositoryPolicy",
+          "ecr:DescribeRepositories",
+          "ecr:ListImages",
+          "ecr:DescribeImages",
+          "ecr:DescribeImageScanFindings"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "attach_ecr_read_policy" {
+  policy_arn = aws_iam_policy.ecr_read_policy.arn
+  role       = aws_iam_role.ec2_role-2.name
 }
 
 #key pair
