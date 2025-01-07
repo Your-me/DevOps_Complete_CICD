@@ -25,7 +25,7 @@ resource "aws_instance" "deploy_server" {
   iam_instance_profile   = aws_iam_instance_profile.ec2-profile-2.name
    connection {
       type        = "ssh"
-      host        = self.public_ip
+      host        = self.public_dns
       user        = "ubuntu"
       private_key = var.private_key
       timeout     = "4m"
