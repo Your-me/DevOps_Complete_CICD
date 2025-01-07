@@ -16,8 +16,8 @@ env:
 jobs:
   deploy-infra:
     runs-on: ubuntu-latest
-    outputs:
-      SERVER_PUBLIC_IP: $instance_public_ip
+    #outputs:
+      #SERVER_PUBLIC_IP: env.INSTANCE_PUBLIC_IP
 
     steps:
       - name: Checkout
@@ -53,7 +53,7 @@ jobs:
         id: get-ip
         run: |-
           instance_public_ip=$(terraform output instance_public_ip)
-          echo "instance_public_ip=$instance_public_ip" >> $GITHUB_ENV
+          echo "INSTANCE_PUBLIC_IP=$instance_public_ip" >> $GITHUB_ENV
           echo "instance_public_ip is retrieved successfully."
          # echo: "::set-output name=instance_public_ip::${terraform output instance_public_ip}" Deprecated 
 
@@ -64,7 +64,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Set IP env variable
-        run: echo "SERVER_PUBLIC_IP=${{ needs.deploy-infra.outputs.SERVER_PUBLIC_IP }}" >> $GITHUB_ENV #GITHUB_ENV is different from #GITHUB_OUTPUT
+        #run: echo "SERVER_PUBLIC_IP=${{ needs.deploy-infra.outputs.SERVER_PUBLIC_IP }}" >> $GITHUB_ENV  -- GITHUB_ENV is different from #GITHUB_OUTPUT
+        run: echo "SERVER_PUBLIC_IP=env.INSTANCE_PUBLIC_IP >> $GITHUB_ENV 
       - name: Login to AWS ECR
         uses: aws-actions/amazon-ecr-login@v1 
       - name: Build, Push docker Image
