@@ -16,8 +16,8 @@ env:
 jobs:
   deploy-infra:
     runs-on: ubuntu-latest
-    #outputs:
-      #SERVER_PUBLIC_IP: ${{ steps.set_ip.outputs.instance_server_ip }}
+    outputs:
+      SERVER_PUBLIC_IP: ${{ steps.set_ip.outputs.instance_server_ip }}
 
     steps:
       - name: Checkout
@@ -57,13 +57,14 @@ jobs:
         id: set_ip
         run: |
           echo "Fetching instance_public_ip..."
-          instance_public_ip=$(terraform output -raw instance_public_ip)
+          instance_public_ip=$(terraform output instance_public_ip)
           if [ -z "$instance_public_ip" ]; then
             echo "Error: instance_public_ip is empty or not found."
             terraform output
             exit 1
           fi
-          echo "instance_server_ip = $instance_public_ip" >> "$GITHUB_OUTPUT"
+          echo "instance_server_ip = $instance_public_ip"
+          echo "$instance_server_ip >> "$GITHUB_OUTPUT"
           echo "instance_server_ip is retrieved successfully."
 
   deploy-app:
