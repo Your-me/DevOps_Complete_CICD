@@ -5,6 +5,7 @@ terraform {
       version = "~> 4.0"
     }
   }
+  required_version = ">=1.0"
   backend "s3" {
     bucket = var.bucket_name
     key    = "aws/ec2-deploy/terraform.tfstate"

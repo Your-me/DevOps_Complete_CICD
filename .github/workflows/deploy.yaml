@@ -49,13 +49,14 @@ jobs:
         run: terraform apply -auto-approve "PLAN"
         working-directory: ./terraform
 
-      - name: Debug Terraform Outputs
+      - name: List Terraform Outputs
         run: terraform output -json
         working-directory: ./terraform
 
       - name: Set output
         id: set_ip
         run: |
+          echo "Fetching instance_public_ip..."
           instance_public_ip=$(terraform output -raw instance_public_ip)
           if [ -z "$instance_public_ip" ]; then
             echo "Error: instance_public_ip is empty or not found."
@@ -109,4 +110,4 @@ jobs:
             sudo $(aws ecr get-login --no-include-email --region us-east-1); 
             sudo docker rm myappcontainer || true
             sudo docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
-            sudo docker run -d --name myappcontainer -p 80:8080 $REGISTRY/$REPOSITORY:$IMAGE_TAGs
+            sudo docker run -d --name myappcontainer -p 80:8080 $REGISTRY/$REPOSITORY:$IMAGE_TAG
