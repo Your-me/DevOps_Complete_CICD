@@ -16,8 +16,8 @@ env:
 jobs:
   deploy-infra:
     runs-on: ubuntu-latest
-    #outputs:
-      #SERVER_PUBLIC_IP: env.INSTANCE_PUBLIC_IP
+    outputs:
+      SERVER_PUBLIC_IP: ${{ steps.set-ip.outputs.instance_public_ip }}
 
     steps:
       - name: Checkout
@@ -50,12 +50,10 @@ jobs:
         working-directory: ./terraform
 
       - name: Set output
-        id: get-ip
+        id: set-ip
         run: |-
           instance_public_ip=$(terraform output instance_public_ip)
-          echo "INSTANCE_PUBLIC_IP=$instance_public_ip" >> $GITHUB_ENV
-          echo "instance_public_ip is retrieved successfully."
-         # echo: "::set-output name=instance_public_ip::${terraform output instance_public_ip}" Deprecated 
+          echo "instance_public_ip=$instance_public_ip" >> $GITHUB_OUTPUT
 
   deploy-app:
     runs-on: ubuntu-latest
@@ -64,12 +62,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Set IP env variable
-        #run: echo "SERVER_PUBLIC_IP=${{ needs.deploy-infra.outputs.SERVER_PUBLIC_IP }}" >> $GITHUB_ENV  -- GITHUB_ENV is different from #GITHUB_OUTPUT
-        run: echo "SERVER_PUBLIC_IP=env.INSTANCE_PUBLIC_IP >> $GITHUB_ENV 
+        run: echo "SERVER_PUBLIC_IP=${{ needs.deploy-infra.outputs.SERVER_PUBLIC_IP }}" >> $GITHUB_ENV
       - name: Login to AWS ECR
+        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1 
       - name: Build, Push docker Image
-        id: login-ecr
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: example-node-app
@@ -90,17 +87,12 @@ jobs:
           host: ${{ env.SERVER_PUBLIC_IP }}
           username: ubuntu
           key: ${{ env.PRIVATE_SSH_KEY }}
-          envs: PRIVATE_SSH_KEY, REGISTRY, REPOSITORY, IMAGE_TAG, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION,AWS_REGION
+          envs: PRIVATE_SSH_KEY, REGISTRY, REPOSITORY, IMAGE_TAG, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION, AWS_REGION
           script: |-
             sudo apt update
             sudo apt install docker.io -y
             sudo apt install awscli -y
-            sudo $(aws ecr get-login --no-include-email --region $AWS_REGION); 
+            sudo $(aws ecr get-login --no-include-email --region us-east-1); 
             sudo docker rm myappcontainer || true
             sudo docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
-            sudo docker run -d -name myappcontainer -p 80:8080 $REGISTRY/$REPOSITORY:$IMAGE_TAG
-
-
-
-
-  
+            sudo docker run -d --name myappcontainer -p 80:8080 $REGISTRY/$REPOSITORY:$IMAGE_TAG
