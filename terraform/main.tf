@@ -114,6 +114,8 @@ resource "aws_instance" "deploy_server" {
       type = "ssh"
       user = "ubuntu"
       host = self.public_ip
+      private_key = var.private_key
+      timeout     = "4m"
     }
 
   }
