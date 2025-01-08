@@ -106,6 +106,7 @@ resource "aws_instance" "deploy_server" {
   vpc_security_group_ids      = [aws_security_group.maingroup.id]
   iam_instance_profile        = aws_iam_instance_profile.ec2-profile-2.name
 
+  /*
   provisioner "remote-exec" {
     inline = [
       "sudo apt-get update",
@@ -119,6 +120,8 @@ resource "aws_instance" "deploy_server" {
     }
 
   }
+  
+  */
 
   tags = {
     Name = "DeployWM"
