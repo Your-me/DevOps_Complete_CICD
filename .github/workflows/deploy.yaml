@@ -11,6 +11,8 @@ env:
   TF_STATE_BUCKET_NAME: ${{ secrets.AWS_TF_STATE_BUCKET_NAME }}
   PRIVATE_SSH_KEY: ${{ secrets.AWS_SSH_KEY_PRIVATE }}
   PUBLIC_SSH_KEY: ${{ secrets.AWS_SSH_KEY_PUBLIC }}
+  HOST_NAME: ${{ secrets.HOST_NAME }}
+  PORT: ${{ secrets.PORT }}
   AWS_REGION: "us-east-1"
 
 jobs:
@@ -93,9 +95,10 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ env.SERVER_PUBLIC_IP }}
-          username: ubuntu
+          username: ${{ env.HOST_NAME }}
           key: ${{ env.PRIVATE_SSH_KEY }}
-          port: 22
+          port: ${{ env.PORT }}
+          envs: PRIVATE_SSH_KEY,REGISTRY,REPOSITORY,IMAGE_TAG,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION,AWS_REGION
           script: |
             sudo apt update
             sudo apt install docker.io -y

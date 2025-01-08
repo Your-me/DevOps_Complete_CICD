@@ -41,6 +41,7 @@ resource "aws_security_group" "maingroup" {
     protocol    = "-1"
     from_port   = 0
     to_port     = 0
+    
   }
 
   ingress {
