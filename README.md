@@ -10,7 +10,6 @@ This project demonstrates a complete CI/CD pipeline using Terraform for AWS infr
 - [Setup Instructions](#setup-instructions)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Project Overview
 
@@ -50,10 +49,10 @@ Navigate to the node_app directory and install Node.js dependencies:   This was 
    npm install   
    ```
 
-3. **Configure AWS Credentials**:
+## Configure AWS Credentials
 The AWS credentials are configured in the Github environment to fufil GitSecOps.
 
-4. **Deployment**:
+## Deployment
 - **GitHub Actions**: The deployment is automated using GitHub Actions. The workflow defined in .github/workflows/deploy.yaml will trigger on pushes or (pull requests - not yet implemented for PR).
 Terraform: Use Terraform to manage and apply infrastructure changes:
    ```bash
@@ -64,7 +63,7 @@ Terraform: Use Terraform to manage and apply infrastructure changes:
             -var="key_name=deployer_key" \
             -out=PLAN  
    ```
-5. **Contributing**:
+## Contributing
 Contributions are welcome! Please fork the repository and submit a pull request for any improvements or bug fixes.
 
 
