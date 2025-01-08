@@ -159,6 +159,7 @@ resource "aws_ecr_repository" "my_repository" {
   image_scanning_configuration {
     scan_on_push = true
   }
+  force_delete = true  # To forcefully delete the repository and its images
 }
 
 # IAM Policy for ECR
